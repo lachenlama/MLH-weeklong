@@ -1,5 +1,5 @@
 '''
-    Presented to Major League hackathon by Swaroop Raj Lama.
+    Presented to Major League hackathon by Swaroop Raj Lama(lachenlama).
     The code is submitted under the week-long challenge of MLH-Build.
 '''
 
@@ -35,6 +35,7 @@ for link in soup.find_all('a', attrs={'class':'a-link-normal a-text-normal'})[:2
 name = []
 price = []
 ratings = []
+item_link = []
 df = pd.DataFrame()
 for link in links:
     
@@ -67,8 +68,10 @@ for link in links:
     f_rating = float(rating)
     ratings.append(f_rating)
 
+    item_link.append(URL + link)
+
     print('%%%')
     print('Downloading data...')
 
-df = pd.DataFrame({'Product_name':name, 'Price_in_rupees':price, 'Rating_out_of_5':ratings})
+df = pd.DataFrame({'Product_name':name, 'Price_in_rupees':price, 'Rating_out_of_5':ratings, 'link':item_link, '.':'.'})
 df.to_csv('data.csv', encoding='utf-8', index=False)
