@@ -24,6 +24,7 @@ print()
 search_item = input("Enter item name to search: ")
 item_searched.send_keys(search_item)
 item_searched.send_keys(Keys.ENTER)
+print("Please wait...")
 
 soup = bs4.BeautifulSoup(driver.page_source, 'html5lib')
 
