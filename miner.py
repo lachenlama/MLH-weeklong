@@ -1,3 +1,8 @@
+'''
+    Presented to Major League hackathon by Swaroop Raj Lama.
+    The code is submitted under the week-long challenge of MLH-Build.
+'''
+
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 import pandas as pd
@@ -11,9 +16,11 @@ chromeoptions = webdriver.ChromeOptions()
 chromeoptions.add_argument('--incognito')
 driver = webdriver.Chrome(PATH, chrome_options=chromeoptions)
 driver.get(URL)
+driver.minimize_window()
 
 time.sleep(3)
 item_searched = driver.find_element_by_id('twotabsearchtextbox')
+print()
 search_item = input("Enter item name to search: ")
 item_searched.send_keys(search_item)
 item_searched.send_keys(Keys.ENTER)
@@ -21,11 +28,12 @@ item_searched.send_keys(Keys.ENTER)
 soup = bs4.BeautifulSoup(driver.page_source, 'html5lib')
 
 links = []
-for link in soup.find_all('a', attrs={'class':'a-link-normal a-text-normal'})[:5]:
+for link in soup.find_all('a', attrs={'class':'a-link-normal a-text-normal'})[:21]:
     links.append(link.get('href'))
 
 name = []
 price = []
+ratings = []
 df = pd.DataFrame()
 for link in links:
     
@@ -39,14 +47,26 @@ for link in links:
     name.append(title)
 
     try:
-        deal_price = nostarchsoup.find('span', attrs={'id':'priceblock_dealprice'}).string.strip()
+        item_price = nostarchsoup.find('span', attrs={'id':'priceblock_dealprice'}).string.strip()
     except AttributeError:
         try:
-            deal_price = nostarchsoup.find('span', attrs={'id':'priceblock_ourprice'}).string.strip()
+            item_price = nostarchsoup.find('span', attrs={'id':'priceblock_ourprice'}).string.strip()
         except:
-            deal_price = ""
-    converted_price = deal_price[2:]
+            item_price = ""
+    converted_price = item_price[2:]
     price.append(converted_price)
 
-df = pd.DataFrame({'Product_name':name, 'Price':price})
+    try:
+        rating = nostarchsoup.find('i', attrs={'class':'a-icon a-icon-star a-star-4-5'}).sting.strip()
+    except AttributeError:
+        try:
+            rating = nostarchsoup.find('span', attrs={'class':'a-icon-alt'}).string.strip()
+        except:
+            rating = ''
+    ratings.append(rating)
+
+    print('%%%')
+    print('Downloading data...')
+
+df = pd.DataFrame({'Product_name':name, 'Price':price, 'Rating':ratings})
 df.to_csv('data.csv', encoding='utf-8')
