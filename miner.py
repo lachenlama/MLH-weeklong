@@ -48,26 +48,27 @@ for link in links:
     name.append(title)
 
     try:
-        item_price = nostarchsoup.find('span', attrs={'id':'priceblock_dealprice'}).string.strip()
+        item_price = nostarchsoup.find('span', attrs={'id':'priceblock_dealprice'}).string.strip().replace(',','')[2:]
     except AttributeError:
         try:
-            item_price = nostarchsoup.find('span', attrs={'id':'priceblock_ourprice'}).string.strip()
+            item_price = nostarchsoup.find('span', attrs={'id':'priceblock_ourprice'}).string.strip().replace(',','')[2:]
         except:
             item_price = ""
-    converted_price = item_price[2:]
+    converted_price = float(item_price)
     price.append(converted_price)
 
     try:
-        rating = nostarchsoup.find('i', attrs={'class':'a-icon a-icon-star a-star-4-5'}).sting.strip()
+        rating = nostarchsoup.find('i', attrs={'class':'a-icon a-icon-star a-star-4-5'}).sting.strip()[:3]
     except AttributeError:
         try:
-            rating = nostarchsoup.find('span', attrs={'class':'a-icon-alt'}).string.strip()
+            rating = nostarchsoup.find('span', attrs={'class':'a-icon-alt'}).string.strip()[:3]
         except:
             rating = ''
-    ratings.append(rating)
+    f_rating = float(rating)
+    ratings.append(f_rating)
 
     print('%%%')
     print('Downloading data...')
 
-df = pd.DataFrame({'Product_name':name, 'Price':price, 'Rating':ratings})
-df.to_csv('data.csv', encoding='utf-8')
+df = pd.DataFrame({'Product_name':name, 'Price_in_rupees':price, 'Rating_out_of_5':ratings})
+df.to_csv('data.csv', encoding='utf-8', index=False)
